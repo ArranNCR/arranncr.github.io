@@ -1,1045 +1,916 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arran Nabilah C.R — Digital Solution Researcher · AI & Digital Transformation</title>
-    <style>
-        :root {
-            --bg: #050A14;
-            --surface: #0A1628;
-            --surface2: #0F1E35;
-            --border: #1A3A5C;
-            --cyan: #00D4FF;
-            --blue: #0084FF;
-            --purple: #7B2FFF;
-            --green: #00FF88;
-            --text: #C8D8F0;
-            --text-dim: #5A7A9A;
-            --font-mono: 'Courier New', monospace;
-            --glow-cyan: 0 0 20px rgba(0,212,255,0.4);
-            --glow-blue: 0 0 20px rgba(0,132,255,0.4);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arran Nabilah C.R — Digital Solution Researcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:    #0B0C10;
+  --paper:  #F7F4EE;
+  --cream:  #EDE9DF;
+  --warm:   #D4CFC3;
+  --accent: #C0392B;
+  --teal:   #1A5F6A;
+  --mono:   'Space Mono', monospace;
+  --sans:   'Syne', sans-serif;
+  --serif:  'IBM Plex Serif', serif;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: none;
+}
+.cursor-dot, .cursor-ring {
+  position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%;
+}
+.cursor-dot { width:6px; height:6px; background:var(--accent); transform:translate(-50%,-50%); }
+.cursor-ring {
+  width:32px; height:32px; border:1.5px solid var(--ink);
+  transform:translate(-50%,-50%); transition:width 0.25s,height 0.25s,border-color 0.25s;
+}
+body::after {
+  content:''; position:fixed; inset:0;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:1000; opacity:0.5;
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+/* LOADER */
+#loader {
+  position:fixed; inset:0; background:var(--ink); z-index:9998;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem;
+}
+.loader-label { font-family:var(--mono); font-size:0.62rem; letter-spacing:0.3em; color:#666; text-transform:uppercase; }
+.loader-name { font-family:var(--sans); font-size:clamp(2.5rem,9vw,6rem); font-weight:800; color:var(--paper); letter-spacing:-0.04em; overflow:hidden; }
+.loader-name span { display:inline-block; transform:translateY(100%); animation:slideUp 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+.loader-name span:nth-child(2){animation-delay:0.08s}
+.loader-name span:nth-child(3){animation-delay:0.16s}
+@keyframes slideUp { to{transform:translateY(0)} }
+.loader-bar-wrap { width:220px; height:1px; background:#222; }
+.loader-bar { height:1px; width:0%; background:var(--accent); transition:none; }
+.loader-count { font-family:var(--mono); font-size:0.65rem; color:#555; }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font-mono);
-            overflow-x: hidden;
-        }
+/* SIDEBAR */
+.sidebar {
+  position:fixed; left:0; top:0; bottom:0; width:68px;
+  background:var(--ink); z-index:100;
+  display:flex; flex-direction:column; align-items:center; padding:1.8rem 0;
+}
+.sidebar-logo {
+  font-family:var(--mono); font-size:0.5rem; color:var(--accent);
+  letter-spacing:0.15em; writing-mode:vertical-rl; transform:rotate(180deg);
+  margin-bottom:auto; user-select:none;
+}
+.sidebar-nav { display:flex; flex-direction:column; gap:2px; margin-bottom:auto; }
+.s-nav-item {
+  width:68px; height:52px; display:flex; align-items:center; justify-content:center;
+  cursor:none; position:relative; transition:background 0.2s;
+}
+.s-nav-item:hover,.s-nav-item.active { background:rgba(255,255,255,0.06); }
+.s-nav-item.active::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:3px; height:20px; background:var(--accent); border-radius:0 2px 2px 0;
+}
+.s-nav-label {
+  font-family:var(--mono); font-size:0.42rem; letter-spacing:0.08em; color:#555;
+  writing-mode:vertical-rl; transform:rotate(180deg); text-transform:uppercase; transition:color 0.2s;
+}
+.s-nav-item:hover .s-nav-label,.s-nav-item.active .s-nav-label { color:var(--paper); }
+.sidebar-year { font-family:var(--mono); font-size:0.48rem; color:#333; letter-spacing:0.05em; }
 
-        /* ── ANIMATED GRID BACKGROUND ── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
+/* MAIN */
+.main { margin-left:68px; }
 
-        /* ── FLOATING PARTICLES ── */
-        .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-        .particle {
-            position: absolute;
-            width: 2px; height: 2px;
-            background: var(--cyan);
-            border-radius: 50%;
-            animation: drift linear infinite;
-            opacity: 0;
-        }
-        @keyframes drift {
-            0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
-            10%  { opacity: 1; }
-            90%  { opacity: 0.6; }
-            100% { transform: translateY(-100px) translateX(var(--dx)); opacity: 0; }
-        }
+/* HERO */
+.hero {
+  min-height:100vh; padding:5rem 6vw 4rem;
+  display:grid; grid-template-rows:1fr auto;
+  position:relative; overflow:hidden; border-bottom:1px solid var(--warm);
+}
+.hero-bg-word {
+  position:absolute; right:-1vw; top:50%; transform:translateY(-50%);
+  font-family:var(--sans); font-size:clamp(10rem,26vw,26rem); font-weight:800;
+  color:transparent; -webkit-text-stroke:1px var(--cream);
+  line-height:1; pointer-events:none; user-select:none; letter-spacing:-0.05em;
+}
+.avail-badge {
+  position:absolute; top:2.5rem; right:6vw;
+  display:flex; align-items:center; gap:0.5rem;
+  font-family:var(--mono); font-size:0.58rem; letter-spacing:0.1em;
+  color:#4A8A60; border:1px solid #B0D8B8; padding:0.35rem 0.75rem;
+  background:rgba(180,230,200,0.12);
+}
+.avail-dot { width:6px; height:6px; background:#4A8A60; border-radius:50%; animation:avPulse 2s ease infinite; }
+@keyframes avPulse{0%,100%{box-shadow:0 0 0 0 rgba(74,138,96,0.4)}50%{box-shadow:0 0 0 6px rgba(74,138,96,0)}}
+.hero-vol { font-family:var(--mono); font-size:0.62rem; color:var(--accent); letter-spacing:0.22em; margin-bottom:3rem; display:flex; align-items:center; gap:1rem; }
+.hero-vol::after { content:''; flex:0 0 80px; height:1px; background:var(--warm); }
+.hero-eyebrow { font-family:var(--mono); font-size:0.62rem; letter-spacing:0.25em; color:var(--teal); text-transform:uppercase; margin-bottom:1.2rem; }
+.hero-name { font-family:var(--sans); font-size:clamp(3rem,7.5vw,7.5rem); font-weight:800; line-height:0.88; letter-spacing:-0.04em; margin-bottom:0.4rem; }
+.hero-name .first { color:var(--ink); }
+.hero-name .last { color:transparent; -webkit-text-stroke:2px var(--ink); }
+.hero-role { font-family:var(--serif); font-style:italic; font-size:clamp(1rem,2.5vw,1.45rem); font-weight:300; color:var(--accent); margin:1.5rem 0 2rem; max-width:500px; line-height:1.4; }
+.hero-abstract { max-width:500px; font-size:0.87rem; line-height:1.85; color:#4A4640; margin-bottom:2.5rem; border-left:2px solid var(--warm); padding-left:1.2rem; }
+.hero-tags { display:flex; flex-wrap:wrap; gap:0.45rem; margin-bottom:3rem; }
+.hero-tag { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.3rem 0.7rem; border:1px solid var(--warm); color:#6A6460; transition:all 0.2s; }
+.hero-tag:hover { border-color:var(--ink); color:var(--ink); background:var(--cream); }
+.hero-footer { display:flex; align-items:center; justify-content:space-between; padding-top:2rem; border-top:1px solid var(--warm); flex-wrap:wrap; gap:1rem; }
+.hero-contacts { display:flex; gap:2.5rem; flex-wrap:wrap; }
+.hc-item { font-family:var(--mono); font-size:0.6rem; color:#888; letter-spacing:0.04em; }
+.hc-item strong { display:block; color:var(--ink); font-size:0.68rem; margin-bottom:0.15rem; }
+.hc-item a { color:var(--teal); text-decoration:none; }
+.scroll-hint { font-family:var(--mono); font-size:0.52rem; color:var(--warm); letter-spacing:0.18em; text-transform:uppercase; writing-mode:vertical-rl; transform:rotate(180deg); display:flex; align-items:center; gap:0.5rem; }
+.scroll-hint::before { content:''; width:1px; height:36px; background:var(--warm); animation:sAnim 2s ease-in-out infinite; }
+@keyframes sAnim{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:0.3;transform:scaleY(0.5)}}
 
-        /* ── LOADING SCREEN ── */
-        .loading-screen {
-            position: fixed; inset: 0;
-            background: var(--bg);
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            z-index: 9999;
-            gap: 1.5rem;
-        }
-        .loading-logo {
-            font-size: 0.7rem;
-            line-height: 1;
-            color: var(--cyan);
-            text-shadow: var(--glow-cyan);
-            text-align: center;
-            letter-spacing: 2px;
-        }
-        .loading-label {
-            font-size: 0.75rem;
-            letter-spacing: 4px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-        }
-        .loading-bar-wrap {
-            width: 300px; height: 2px;
-            background: var(--surface2);
-            position: relative;
-            overflow: hidden;
-        }
-        .loading-bar {
-            height: 100%; width: 0%;
-            background: linear-gradient(90deg, var(--blue), var(--cyan));
-            transition: width 0.4s ease;
-            box-shadow: 0 0 12px var(--cyan);
-        }
-        .loading-status { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 1px; }
+/* SECTIONS */
+.section { display:none; }
+.section.active { display:block; }
+.sec-wrap { padding:5rem 6vw; max-width:1120px; }
+.sec-header { display:flex; align-items:baseline; gap:1.5rem; margin-bottom:4rem; padding-bottom:1rem; border-bottom:2px solid var(--ink); }
+.sec-num { font-family:var(--mono); font-size:0.62rem; color:var(--accent); letter-spacing:0.2em; min-width:40px; }
+.sec-title { font-family:var(--sans); font-size:clamp(2rem,4.5vw,3.2rem); font-weight:800; letter-spacing:-0.035em; line-height:1; }
+.sec-sub { font-family:var(--serif); font-style:italic; font-size:0.85rem; color:#888; margin-left:auto; }
 
-        /* ── MAIN LAYOUT ── */
-        .shell {
-            display: none;
-            min-height: 100vh;
-            padding: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
+/* RESEARCH CARDS */
+.r-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--warm); border:1px solid var(--warm); margin-bottom:3rem; }
+.r-card { background:var(--paper); padding:2.5rem; position:relative; overflow:hidden; transition:background 0.3s; }
+.r-card:hover { background:var(--cream); }
+.r-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.r-card:nth-child(1)::before{background:var(--accent)}
+.r-card:nth-child(2)::before{background:var(--teal)}
+.r-card:nth-child(3)::before{background:#B8860B}
+.r-card:nth-child(4)::before{background:var(--ink)}
+.r-num { font-family:var(--mono); font-size:0.52rem; letter-spacing:0.2em; color:var(--accent); margin-bottom:1.5rem; }
+.r-icon { font-size:1.8rem; margin-bottom:1rem; display:block; }
+.r-title { font-family:var(--sans); font-size:1rem; font-weight:700; margin-bottom:0.75rem; line-height:1.25; }
+.r-body { font-size:0.8rem; line-height:1.8; color:#5A5550; }
+.r-list { list-style:none; margin-top:0.6rem; padding-left:0; display:flex; flex-direction:column; gap:0.3rem; }
+.r-list li { font-size:0.76rem; line-height:1.7; color:#5A5550; padding-left:1rem; position:relative; }
+.r-list li::before { content:'·'; position:absolute; left:0; color:var(--accent); font-size:1rem; line-height:1.4; }
+.r-tag { position:absolute; bottom:1.2rem; right:1.2rem; font-family:var(--mono); font-size:0.48rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--warm); }
 
-        /* ── HEADER ── */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 1.5rem 2rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-top: 2px solid var(--cyan);
-            border-radius: 4px;
-            margin-bottom: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, var(--blue), var(--cyan), var(--purple));
-        }
-        .header-left {}
-        .name-ascii {
-            font-size: 0.55rem;
-            line-height: 1.1;
-            color: var(--cyan);
-            text-shadow: var(--glow-cyan);
-            margin-bottom: 0.8rem;
-        }
-        .header-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: #fff;
-        }
-        .header-title span { color: var(--cyan); }
-        .header-subtitle {
-            margin-top: 0.4rem;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-        }
-        .header-badges {
-            display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;
-        }
-        .badge {
-            font-size: 0.65rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 2px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        .badge-cyan  { border: 1px solid var(--cyan); color: var(--cyan); }
-        .badge-blue  { border: 1px solid var(--blue); color: var(--blue); }
-        .badge-purple{ border: 1px solid var(--purple); color: var(--purple); }
-        .badge-green { border: 1px solid var(--green); color: var(--green); }
+.r-note { font-family:var(--serif); font-style:italic; font-size:0.95rem; line-height:1.85; padding:2rem 2.5rem 2rem 4rem; background:var(--ink); color:var(--cream); position:relative; }
+.r-note::before { content:'"'; font-size:5rem; line-height:0; position:absolute; top:2.5rem; left:1.5rem; color:var(--accent); opacity:0.3; font-family:Georgia,serif; }
+.r-note cite { display:block; font-family:var(--mono); font-size:0.58rem; letter-spacing:0.12em; color:#666; margin-top:1rem; font-style:normal; }
 
-        .header-right {
-            text-align: right;
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            line-height: 1.8;
-            min-width: 200px;
-        }
-        .header-right a { color: var(--cyan); text-decoration: none; }
-        .header-right a:hover { text-shadow: var(--glow-cyan); }
-        .status-dot {
-            display: inline-block;
-            width: 7px; height: 7px;
-            background: var(--green);
-            border-radius: 50%;
-            margin-right: 5px;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 6px var(--green);
-        }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* EXPERIENCE */
+.exp-item { display:grid; grid-template-columns:160px 1fr; gap:3rem; padding:2.5rem 0; border-bottom:1px solid var(--warm); }
+.exp-item:last-child{border-bottom:none}
+.exp-period { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.1em; color:var(--accent); line-height:1.7; margin-bottom:0.4rem; }
+.exp-duration { font-family:var(--mono); font-size:0.52rem; color:#999; letter-spacing:0.06em; margin-top:0.3rem; }
+.exp-company { font-family:var(--sans); font-size:0.68rem; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:0.08em; line-height:1.5; }
+.exp-role { font-family:var(--sans); font-size:1.05rem; font-weight:700; margin-bottom:0.6rem; line-height:1.2; }
+.exp-summary { font-size:0.8rem; line-height:1.8; color:#5A5550; margin-bottom:0.9rem; font-style:italic; }
+.exp-desc { font-size:0.8rem; line-height:1.8; color:#5A5550; margin-bottom:0.9rem; }
+.exp-responsibilities { margin:0.8rem 0; }
+.resp-title { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--teal); margin-bottom:0.6rem; }
+.resp-list { list-style:none; display:flex; flex-direction:column; gap:0.5rem; padding-left:0; }
+.resp-list li { font-size:0.79rem; line-height:1.75; color:#4A4640; padding-left:1.2rem; position:relative; }
+.resp-list li::before { content:'—'; position:absolute; left:0; color:var(--warm); font-family:var(--mono); font-size:0.7rem; }
+.resp-list li strong { color:var(--ink); font-family:var(--sans); font-size:0.78rem; }
+.exp-impact { margin:0.8rem 0; font-size:0.79rem; line-height:1.75; color:#4A4640; padding:0.75rem 1rem; background:var(--cream); border-left:2px solid var(--teal); }
+.impact-label { font-family:var(--mono); font-size:0.55rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--teal); margin-right:0.5rem; }
+.pills { display:flex; flex-wrap:wrap; gap:0.3rem; }
+.pill { font-family:var(--mono); font-size:0.52rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.22rem 0.55rem; background:var(--cream); color:#6A6460; border:1px solid var(--warm); }
 
-        /* ── NAV TERMINAL ── */
-        .nav-terminal {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .nav-prompt { color: var(--cyan); font-size: 0.8rem; }
-        .nav-cmd    { color: var(--text-dim); font-size: 0.8rem; margin-right: 0.5rem; }
-        .nav-item {
-            color: var(--text);
-            font-size: 0.75rem;
-            cursor: pointer;
-            padding: 0.25rem 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            text-decoration: none;
-            transition: all 0.2s;
-            letter-spacing: 1px;
-        }
-        .nav-item:hover, .nav-item.active {
-            border-color: var(--cyan);
-            color: var(--cyan);
-            box-shadow: var(--glow-cyan);
-            background: rgba(0,212,255,0.05);
-        }
+/* SKILLS */
+.skills-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; }
+.skills-col-label { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--accent); margin-bottom:2rem; padding-bottom:0.75rem; border-bottom:1px solid var(--warm); }
+.sk-item { margin-bottom:1.5rem; }
+.sk-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.5rem; }
+.sk-name { font-family:var(--sans); font-size:0.82rem; font-weight:600; }
+.sk-pct { font-family:var(--mono); font-size:0.58rem; color:#888; }
+.sk-track { height:2px; background:var(--warm); position:relative; }
+.sk-fill { height:100%; background:var(--ink); width:0%; transition:width 1.2s cubic-bezier(0.4,0,0.2,1); position:relative; }
+.sk-fill::after { content:''; position:absolute; right:-1px; top:-3px; width:8px; height:8px; background:var(--accent); border-radius:50%; border:2px solid var(--paper); }
+.cert-list { display:flex; flex-direction:column; gap:1px; }
+.cert-row { display:flex; align-items:center; gap:1.5rem; padding:1.2rem 0; border-bottom:1px solid var(--warm); }
+.cert-row:last-child{border-bottom:none}
+.cert-ico { width:34px; height:34px; background:var(--ink); display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; }
+.cert-name { font-family:var(--sans); font-size:0.78rem; font-weight:600; line-height:1.3; }
+.cert-cat { font-family:var(--mono); font-size:0.52rem; letter-spacing:0.1em; color:#888; margin-top:0.15rem; }
 
-        /* ── PANELS GRID ── */
-        .panels-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-        .panel-full { grid-column: 1 / -1; }
+/* PROJECTS */
+.proj-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--warm); border:1px solid var(--warm); }
+.proj-card { background:var(--paper); padding:2.2rem; position:relative; overflow:hidden; transition:background 0.35s; display:flex; flex-direction:column; }
+.proj-card:hover { background:var(--ink); }
+.proj-card:hover .proj-title,.proj-card:hover .proj-desc,.proj-card:hover .proj-dur { color:var(--paper); }
+.proj-card:hover .pill { border-color:#333; color:#777; background:transparent; }
+.proj-num { font-family:var(--mono); font-size:0.52rem; letter-spacing:0.2em; color:var(--accent); margin-bottom:1.5rem; }
+.proj-title { font-family:var(--sans); font-size:1rem; font-weight:700; line-height:1.3; margin-bottom:0.5rem; transition:color 0.35s; }
+.proj-dur { font-family:var(--mono); font-size:0.58rem; color:#888; margin-bottom:0.9rem; transition:color 0.35s; }
+.proj-desc { font-size:0.78rem; line-height:1.75; color:#5A5550; margin-bottom:1.5rem; flex:1; transition:color 0.35s; }
 
-        /* ── PANEL ── */
-        .panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            overflow: hidden;
-            display: none;
-        }
-        .panel.visible { display: block; }
-        .panel-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.6rem 1.2rem;
-            background: var(--surface2);
-            border-bottom: 1px solid var(--border);
-            font-size: 0.7rem;
-        }
-        .panel-dots { display: flex; gap: 5px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot-r { background: #FF5F56; }
-        .dot-y { background: #FFBD2E; }
-        .dot-g { background: #27C93F; }
-        .panel-title { color: var(--cyan); letter-spacing: 2px; font-weight: bold; flex: 1; }
-        .panel-meta  { color: var(--text-dim); }
-        .panel-body  { padding: 1.5rem; }
+/* CONTACT */
+.contact-layout { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+.contact-big { font-family:var(--sans); font-size:clamp(2.2rem,5vw,4rem); font-weight:800; letter-spacing:-0.04em; line-height:0.95; margin-bottom:1.5rem; }
+.contact-big em { font-style:italic; font-family:var(--serif); font-weight:300; color:var(--accent); }
+.contact-sub { font-size:0.83rem; line-height:1.8; color:#5A5550; margin-bottom:2.5rem; max-width:360px; }
+.contact-cta { display:inline-block; font-family:var(--mono); font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; padding:0.9rem 2rem; background:var(--ink); color:var(--paper); text-decoration:none; transition:background 0.2s; cursor:none; }
+.contact-cta:hover { background:var(--accent); }
+.contact-row { display:flex; align-items:flex-start; gap:1.2rem; padding:1.2rem 0; border-bottom:1px solid var(--warm); }
+.contact-row:last-child{border-bottom:none}
+.c-ico { width:34px; height:34px; border:1px solid var(--warm); display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; }
+.c-label { font-family:var(--mono); font-size:0.52rem; letter-spacing:0.15em; text-transform:uppercase; color:#888; margin-bottom:0.2rem; }
+.c-val { font-family:var(--sans); font-size:0.8rem; font-weight:600; }
+.c-val a { color:var(--teal); text-decoration:none; }
 
-        /* ── ABOUT ── */
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        .about-text { font-size: 0.8rem; line-height: 1.8; color: var(--text); }
-        .about-text p { margin-bottom: 0.8rem; }
-        .about-text .hl { color: var(--cyan); }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        .stat-box {
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            padding: 0.75rem;
-            text-align: center;
-        }
-        .stat-num { font-size: 1.4rem; font-weight: bold; color: var(--cyan); text-shadow: var(--glow-cyan); }
-        .stat-label { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; margin-top: 0.2rem; }
+/* EDUCATION */
+.edu-block { display:grid; grid-template-columns:160px 1fr; gap:3rem; padding:2.5rem 0; border-bottom:1px solid var(--warm); }
+.edu-yr { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.1em; color:var(--accent); padding-top:0.3rem; }
+.edu-deg { font-family:var(--sans); font-size:1.05rem; font-weight:700; margin-bottom:0.4rem; }
+.edu-sch { font-family:var(--serif); font-style:italic; color:var(--teal); font-size:0.88rem; margin-bottom:0.7rem; }
+.edu-desc { font-size:0.8rem; line-height:1.8; color:#5A5550; }
 
-        /* ── EXPERIENCE ── */
-        .timeline { position: relative; padding-left: 1.5rem; }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 1px;
-            background: linear-gradient(to bottom, var(--cyan), transparent);
-        }
-        .timeline-item {
-            position: relative;
-            margin-bottom: 1.5rem;
-            padding: 1rem 1.2rem;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            background: var(--surface2);
-            transition: border-color 0.2s;
-        }
-        .timeline-item:hover { border-color: var(--cyan); }
-        .timeline-item::before {
-            content: '▶';
-            position: absolute;
-            left: -1.7rem;
-            top: 1rem;
-            color: var(--cyan);
-            font-size: 0.6rem;
-        }
-        .ti-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.3rem; }
-        .ti-role { font-size: 0.85rem; font-weight: bold; color: #fff; }
-        .ti-company { font-size: 0.75rem; color: var(--cyan); }
-        .ti-duration {
-            font-size: 0.65rem; color: var(--text-dim);
-            border: 1px solid var(--border);
-            padding: 0.15rem 0.4rem;
-            border-radius: 2px;
-            white-space: nowrap;
-        }
-        .ti-body { font-size: 0.75rem; line-height: 1.7; color: var(--text-dim); margin-top: 0.5rem; }
-        .ti-body li { margin-left: 1rem; margin-bottom: 0.2rem; }
-        .ti-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem; }
-        .ti-tag {
-            font-size: 0.6rem;
-            padding: 0.1rem 0.4rem;
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            color: var(--text-dim);
-        }
+/* FOOTER */
+.site-footer { border-top:1px solid var(--warm); padding:1.4rem 6vw; display:flex; justify-content:space-between; align-items:center; margin-left:68px; flex-wrap:wrap; gap:1rem; }
+.ft { font-family:var(--mono); font-size:0.56rem; letter-spacing:0.1em; color:#AAA; }
 
-        /* ── SKILLS ── */
-        .skills-section { margin-bottom: 1.5rem; }
-        .skills-heading {
-            font-size: 0.7rem;
-            color: var(--cyan);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .skills-heading::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-        .skill-bars { display: flex; flex-direction: column; gap: 0.6rem; }
-        .skill-row { display: flex; align-items: center; gap: 0.75rem; }
-        .skill-name { font-size: 0.72rem; min-width: 160px; color: var(--text); }
-        .skill-bar-bg { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
-        .skill-bar-fill {
-            height: 100%;
-            border-radius: 2px;
-            background: linear-gradient(90deg, var(--blue), var(--cyan));
-            box-shadow: 0 0 6px var(--cyan);
-            width: 0%;
-            transition: width 1s ease;
-        }
-        .skill-pct { font-size: 0.65rem; color: var(--text-dim); min-width: 30px; text-align: right; }
+/* FADE UP */
+.fade-up { opacity:0; transform:translateY(20px); transition:opacity 0.65s ease,transform 0.65s ease; }
+.fade-up.vis { opacity:1; transform:translateY(0); }
 
-        .cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; }
-        .cert-item {
-            font-size: 0.7rem;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--border);
-            border-left: 2px solid var(--purple);
-            border-radius: 2px;
-            color: var(--text);
-            line-height: 1.4;
-        }
+/* HERO STATS */
+.hero-stats { display:flex; gap:0; margin-bottom:2.5rem; border:1px solid var(--warm); width:fit-content; flex-wrap:wrap; }
+.hero-stat { padding:0.8rem 1.6rem; border-right:1px solid var(--warm); text-align:center; min-width:90px; }
+.hero-stat:last-child { border-right:none; }
+.hs-num { font-family:var(--sans); font-size:1.4rem; font-weight:800; color:var(--ink); line-height:1; }
+.hs-label { font-family:var(--mono); font-size:0.48rem; letter-spacing:0.15em; text-transform:uppercase; color:#888; margin-top:0.25rem; }
 
-        /* ── RESEARCH / AI IoT ── */
-        .research-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .research-card {
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 1rem;
-            background: var(--surface2);
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.2s, transform 0.2s;
-        }
-        .research-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
-        .research-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-        }
-        .card-ai::before   { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
-        .card-iot::before  { background: linear-gradient(90deg, var(--cyan), var(--green)); }
-        .card-sec::before  { background: linear-gradient(90deg, var(--purple), var(--blue)); }
-        .card-data::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
-        .rc-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
-        .rc-title { font-size: 0.8rem; font-weight: bold; color: #fff; margin-bottom: 0.4rem; }
-        .rc-desc { font-size: 0.7rem; color: var(--text-dim); line-height: 1.6; }
+/* MOBILE BOTTOM NAV */
+.mobile-nav {
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:200;
+  background:var(--ink); border-top:1px solid #1a1a1a;
+  flex-direction:row; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+}
+.mobile-nav::-webkit-scrollbar{display:none}
+.mobile-nav .mn-item {
+  flex:1; min-width:60px; padding:0.7rem 0.5rem; display:flex; flex-direction:column;
+  align-items:center; gap:0.25rem; cursor:pointer; border-bottom:2px solid transparent; transition:border-color 0.2s;
+}
+.mobile-nav .mn-item.active { border-bottom-color:var(--accent); }
+.mobile-nav .mn-label { font-family:var(--mono); font-size:0.42rem; letter-spacing:0.08em; text-transform:uppercase; color:#555; transition:color 0.2s; white-space:nowrap; }
+.mobile-nav .mn-item.active .mn-label, .mobile-nav .mn-item:hover .mn-label { color:var(--paper); }
+.mobile-nav .mn-icon { font-size:0.9rem; }
 
-        /* ── EDUCATION ── */
-        .edu-card {
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            padding: 1.2rem;
-            background: var(--surface2);
-            display: flex; align-items: flex-start; gap: 1rem;
-        }
-        .edu-icon { font-size: 2rem; }
-        .edu-degree { font-size: 0.85rem; font-weight: bold; color: #fff; }
-        .edu-school { font-size: 0.8rem; color: var(--cyan); margin-top: 0.2rem; }
-        .edu-year   { font-size: 0.7rem; color: var(--text-dim); margin-top: 0.3rem; }
+/* PAGE TRANSITION */
+.section.active { animation:secIn 0.35s ease forwards; }
+@keyframes secIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
-        /* ── CONTACT ── */
-        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .contact-card {
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            padding: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: var(--surface2);
-            transition: border-color 0.2s;
-        }
-        .contact-card:hover { border-color: var(--cyan); }
-        .contact-icon { font-size: 1.2rem; }
-        .contact-label { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; }
-        .contact-value { font-size: 0.75rem; color: #fff; margin-top: 0.1rem; }
-        .contact-value a { color: var(--cyan); text-decoration: none; }
+/* EXPERIENCE COMPANY GROUPING LABEL */
+.exp-group-label {
+  font-family:var(--mono); font-size:0.56rem; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--teal); padding:1.5rem 0 0.5rem; display:flex; align-items:center; gap:1rem;
+}
+.exp-group-label::after { content:''; flex:1; height:1px; background:var(--cream); }
 
-        /* ── PROJECTS ── */
-        .project-card {
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            padding: 1.2rem;
-            background: var(--surface2);
-            margin-bottom: 1rem;
-            transition: border-color 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-        .project-card:hover { border-color: var(--cyan); }
-        .project-card::after {
-            content: 'ACTIVE';
-            position: absolute;
-            top: 0.8rem; right: 0.8rem;
-            font-size: 0.55rem;
-            color: var(--green);
-            border: 1px solid var(--green);
-            padding: 0.1rem 0.4rem;
-            border-radius: 2px;
-            letter-spacing: 1px;
-        }
-        .pc-title { font-size: 0.9rem; font-weight: bold; color: #fff; margin-bottom: 0.3rem; }
-        .pc-duration { font-size: 0.65rem; color: var(--text-dim); margin-bottom: 0.6rem; }
-        .pc-desc { font-size: 0.75rem; color: var(--text); line-height: 1.7; }
-        .pc-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.6rem; }
-        .pc-tag {
-            font-size: 0.6rem;
-            padding: 0.15rem 0.5rem;
-            border: 1px solid var(--cyan);
-            color: var(--cyan);
-            border-radius: 2px;
-        }
+/* COMPANY STATUS TAG */
+.company-status {
+  display:inline-block; margin-top:0.5rem;
+  font-family:var(--mono); font-size:0.46rem; letter-spacing:0.1em; text-transform:uppercase;
+  padding:0.18rem 0.45rem; border:1px solid var(--warm); color:#888;
+}
+.company-status.current { border-color:#9DC8A0; color:#4A8A60; background:rgba(74,138,96,0.06); }
 
-        /* ── SCROLLBAR ── */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* SECTION padding */
+.sec-wrap { padding:4.5rem 6vw 5rem; max-width:1120px; }
 
-        @media(max-width: 768px) {
-            .panels-grid { grid-template-columns: 1fr; }
-            .about-grid, .research-grid, .cert-grid, .contact-grid { grid-template-columns: 1fr; }
-            .header { flex-direction: column; gap: 1rem; }
-            .header-right { text-align: left; }
-            .name-ascii { font-size: 0.35rem; }
-        }
-    </style>
+/* RESPONSIVE */
+@media(max-width:860px){
+  .sidebar{display:none}
+  .mobile-nav{display:flex}
+  .main,.site-footer{margin-left:0}
+  .main{padding-bottom:60px}
+  .r-grid,.skills-grid,.contact-layout{grid-template-columns:1fr}
+  .proj-grid{grid-template-columns:1fr}
+  .exp-item,.edu-block{grid-template-columns:1fr;gap:0.5rem}
+  .hero-bg-word{display:none}
+  .avail-badge{position:static;margin-bottom:1.5rem;display:inline-flex}
+  .hero{padding:2.5rem 5vw 3rem}
+  .hero-contacts{gap:1.5rem}
+  .sk-panel.active{grid-template-columns:1fr;gap:2.5rem}
+  .hero-stats .hero-stat{min-width:70px;padding:0.6rem 1rem}
+  .hs-num{font-size:1.1rem}
+}
+</style>
 </head>
 <body>
+<div class="cursor-dot" id="cd"></div>
+<div class="cursor-ring" id="cr"></div>
 
-<!-- Particles -->
-<div class="particles" id="particles"></div>
-
-<!-- Loading -->
-<div class="loading-screen" id="loading-screen">
-    <pre class="loading-logo">
- ██████╗ ██████╗ ██████╗  █████╗ ███╗   ██╗
-██╔═══██╗██╔══██╗██╔══██╗██╔══██╗████╗  ██║
-███████╗║██████╔╝██████╔╝███████║██╔██╗ ██║
-██╔══██║ ██╔══██╗██╔══██╗██╔══██║██║╚██╗██║
-╚██████╔╝██║  ██║██║  ██║██║  ██║██║ ╚████║
- ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝</pre>
-    <div class="loading-label">AI · IoT · Research · Digital</div>
-    <div class="loading-bar-wrap">
-        <div class="loading-bar" id="loading-bar"></div>
-    </div>
-    <div class="loading-status" id="loading-status">Booting neural interface...</div>
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-label">Initializing Research Portfolio</div>
+  <div class="loader-name">
+    <span>ARRAN&nbsp;</span><span>NABILAH&nbsp;</span><span>C.R</span>
+  </div>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="lbar"></div></div>
+  <div class="loader-count" id="lcount">000</div>
 </div>
 
-<!-- Main Shell -->
-<div class="shell" id="shell">
-<div class="container">
+<!-- APP -->
+<div id="app" style="display:none">
 
-    <!-- HEADER -->
-    <div class="header">
-        <div class="header-left">
-            <pre class="name-ascii">
- ██████╗ ██████╗ ██████╗  █████╗ ███╗   ██╗    ███╗   ██╗ ██████╗██████╗
-██╔══██╗██╔══██╗██╔══██╗██╔══██╗████╗  ██║    ████╗  ██║██╔════╝██╔══██╗
-███████║██████╔╝██████╔╝███████║██╔██╗ ██║    ██╔██╗ ██║██║     ██████╔╝
-██╔══██║██╔══██╗██╔══██╗██╔══██║██║╚██╗██║    ██║╚██╗██║██║     ██╔══██╗
-██║  ██║██║  ██║██║  ██║██║  ██║██║ ╚████║    ██║ ╚████║╚██████╗██║  ██║
-╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═╝  ╚═══╝ ╚═════╝╚═╝  ╚═╝</pre>
-            <div class="header-title"><span>&gt;</span> ARRAN NABILAH C.R</div>
-            <div class="header-subtitle">DIGITAL SOLUTION RESEARCHER · AI & DIGITAL TRANSFORMATION STRATEGIST</div>
-            <div class="header-badges">
-                <span class="badge badge-cyan">AI Research</span>
-                <span class="badge badge-blue">R&amp;D</span>
-                <span class="badge badge-purple">Automation</span>
-                <span class="badge badge-green">Digital Transformation</span>
-                <span class="badge badge-cyan">AgriTech</span>
-                <span class="badge badge-blue">Cyber Security</span>
-            </div>
-        </div>
-        <div class="header-right">
-            <div><span class="status-dot"></span>AVAILABLE FOR PROJECTS</div>
-            <div>📍 Banyuwangi, East Java, Indonesia</div>
-            <div>✉ caesararran@gmail.com</div>
-            <div>🔗 <a href="https://www.linkedin.com/in/arran-n-c-r" target="_blank">linkedin.com/in/arran-n-c-r</a></div>
-            <div>🌐 <a href="https://arranncr.github.io" target="_blank">arranncr.github.io</a></div>
-            <br>
-            <div style="color:#334;font-size:0.65rem;">node@arranncr ~ $</div>
-        </div>
+<aside class="sidebar">
+  <div class="sidebar-logo">ARRAN·NCR</div>
+  <nav class="sidebar-nav">
+    <div class="s-nav-item active" data-s="hero"><div class="s-nav-label">Home</div></div>
+    <div class="s-nav-item" data-s="research"><div class="s-nav-label">Research</div></div>
+    <div class="s-nav-item" data-s="experience"><div class="s-nav-label">Career</div></div>
+    <div class="s-nav-item" data-s="skills"><div class="s-nav-label">Skills</div></div>
+    <div class="s-nav-item" data-s="projects"><div class="s-nav-label">Projects</div></div>
+    <div class="s-nav-item" data-s="education"><div class="s-nav-label">Edu</div></div>
+    <div class="s-nav-item" data-s="contact"><div class="s-nav-label">Contact</div></div>
+  </nav>
+  <div class="sidebar-year">2026</div>
+</aside>
+
+<div class="main">
+
+<!-- ═══ HERO ═══ -->
+<div class="hero section active" id="hero">
+  <div class="hero-bg-word">R&D</div>
+  <div class="avail-badge"><div class="avail-dot"></div>OPEN TO COLLABORATE</div>
+  <div>
+    <div class="hero-vol">VOL. 2026 — DIGITAL SOLUTION RESEARCHER</div>
+    <div class="hero-eyebrow">AI &amp; Digital Transformation Strategist</div>
+    <div class="hero-name">
+      <div class="first">ARRAN</div>
+      <div class="last">NABILAH C.R</div>
     </div>
-
-    <!-- NAV -->
-    <div class="nav-terminal">
-        <span class="nav-prompt">$</span>
-        <span class="nav-cmd">load --section</span>
-        <span class="nav-item active" data-section="overview">overview</span>
-        <span class="nav-item" data-section="experience">experience</span>
-        <span class="nav-item" data-section="skills">skills</span>
-        <span class="nav-item" data-section="research">ai &amp; iot</span>
-        <span class="nav-item" data-section="projects">projects</span>
-        <span class="nav-item" data-section="education">education</span>
-        <span class="nav-item" data-section="contact">contact</span>
+    <div class="hero-role">Bridging the gap between business needs<br>and technology through research &amp; innovation.</div>
+    <p class="hero-abstract">Digital Solution Researcher di Pandawa Agri Indonesia — mendorong inovasi digital dan implementasi AI untuk meningkatkan performa bisnis. Co-Founder Simetris Digital Agency dengan 6+ tahun pengalaman mengelola proyek digital kompleks.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">Research &amp; Development</span>
+      <span class="hero-tag">Artificial Intelligence</span>
+      <span class="hero-tag">Automation</span>
+      <span class="hero-tag">Digital Transformation</span>
+      <span class="hero-tag">ISO/IEC 27001</span>
+      <span class="hero-tag">AgriTech</span>
     </div>
-
-    <!-- ═══════════════ SECTIONS ═══════════════ -->
-
-    <!-- OVERVIEW -->
-    <div class="panels-grid" id="sec-overview">
-
-        <!-- About -->
-        <div class="panel panel-full visible">
-            <div class="panel-header">
-                <div class="panel-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-                <div class="panel-title">PROFILE.JSON</div>
-                <div class="panel-meta">about · summary</div>
-            </div>
-            <div class="panel-body">
-                <div class="about-grid">
-                    <div class="about-text">
-                        <p>Saya adalah <span class="hl">Digital Solution Researcher & AI Digital Transformation Strategist</span> di Pandawa Agri Indonesia — mendorong inovasi digital dan implementasi AI untuk meningkatkan performa bisnis dan efisiensi operasional.</p>
-                        <p>Fokus saya adalah mengubah <span class="hl">insights menjadi solusi strategis & scalable</span> melalui riset teknologi, pengembangan enterprise platform, dan kolaborasi lintas fungsi untuk mendukung perjalanan transformasi digital perusahaan.</p>
-                        <p>Co-Founder <span class="hl">Simetris Digital Agency</span> — mengelola 10+ klien simultan dengan solusi software dan strategi digital yang inovatif selama 6+ tahun.</p>
-                    </div>
-                    <div class="stat-grid">
-                        <div class="stat-box">
-                            <div class="stat-num">6+</div>
-                            <div class="stat-label">YEARS EXP</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-num">10+</div>
-                            <div class="stat-label">CLIENTS</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-num">4</div>
-                            <div class="stat-label">CERTIFICATIONS</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-num">7</div>
-                            <div class="stat-label">ROLES HELD</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hs-num">6+</div><div class="hs-label">Years Exp</div></div>
+      <div class="hero-stat"><div class="hs-num">10+</div><div class="hs-label">Clients</div></div>
+      <div class="hero-stat"><div class="hs-num">4</div><div class="hs-label">Certs</div></div>
+      <div class="hero-stat"><div class="hs-num">8</div><div class="hs-label">Roles</div></div>
+      <div class="hero-stat"><div class="hs-num">5yr+</div><div class="hs-label">Pandawa Agri</div></div>
     </div>
-
-    <!-- EXPERIENCE -->
-    <div class="panels-grid" id="sec-experience" style="display:none;">
-        <div class="panel panel-full visible">
-            <div class="panel-header">
-                <div class="panel-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-                <div class="panel-title">EXPERIENCE.LOG</div>
-                <div class="panel-meta">career timeline</div>
-            </div>
-            <div class="panel-body">
-                <div class="timeline">
-
-                    <div class="timeline-item">
-                        <div class="ti-top">
-                            <div>
-                                <div class="ti-role">Digital Solution Researcher</div>
-                                <div class="ti-company">Pandawa Agri Indonesia</div>
-                            </div>
-                            <div class="ti-duration">Sep 2025 – Present · 6 months</div>
-                        </div>
-                        <ul class="ti-body">
-                            <li>Riset tren teknologi digital, implementasi AI, dan optimasi enterprise platform</li>
-                            <li>Menerjemahkan kebutuhan bisnis & user menjadi inisiatif digital yang meningkatkan efisiensi & skalabilitas</li>
-                            <li>Mengembangkan strategi & roadmap digital untuk menyelaraskan adopsi teknologi dengan prioritas organisasi</li>
-                            <li>Kolaborasi lintas fungsi untuk memastikan eksekusi proyek dan adopsi yang sukses</li>
-                            <li>Memimpin evaluasi & proof-of-concept tools terkini untuk solusi paling efektif dan berkelanjutan</li>
-                            <li>Mendukung inisiatif marketing melalui optimasi SEO & SEM serta analitik data</li>
-                        </ul>
-                        <div class="ti-tags">
-                            <span class="ti-tag">AI Research</span><span class="ti-tag">R&D</span><span class="ti-tag">Digital Transformation</span><span class="ti-tag">Automation</span><span class="ti-tag">Proof-of-Concept</span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="ti-top">
-                            <div>
-                                <div class="ti-role">Project Manager</div>
-                                <div class="ti-company">Pandawa Agri Indonesia</div>
-                            </div>
-                            <div class="ti-duration">Sep 2024 – Sep 2025 · 1 year</div>
-                        </div>
-                        <ul class="ti-body">
-                            <li>Membuat & mengimplementasikan project plans komprehensif: objectives, timeline, alokasi budget</li>
-                            <li>Koordinasi cross-functional teams berbasis kekuatan, mendorong akuntabilitas & produktivitas</li>
-                            <li>Monitor budget & timeline secara ketat, penyesuaian proaktif terhadap potensi delay</li>
-                            <li>Identifikasi risiko dini, implementasi mitigasi, evaluasi pasca-proyek untuk continuous improvement</li>
-                        </ul>
-                        <div class="ti-tags">
-                            <span class="ti-tag">Project Management</span><span class="ti-tag">Team Leadership</span><span class="ti-tag">Risk Management</span><span class="ti-tag">Agile</span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="ti-top">
-                            <div>
-                                <div class="ti-role">Digital Platform Specialist</div>
-                                <div class="ti-company">Pandawa Agri Indonesia</div>
-                            </div>
-                            <div class="ti-duration">Mar 2023 – Sep 2025 · 2 years 7 months</div>
-                        </div>
-                        <ul class="ti-body">
-                            <li>Manajemen & maintenance platform systems perusahaan, identifikasi kebutuhan pengembangan</li>
-                            <li>Memimpin proyek platform development dari inisiasi hingga deployment</li>
-                            <li>Desain strategi peningkatan performa platform & analisis kebutuhan bisnis-teknologi</li>
-                            <li>Analitik data untuk laporan performa, rekomendasi perbaikan, dan kepatuhan keamanan data</li>
-                            <li>Manajemen website SEO & SEM untuk visibilitas online perusahaan</li>
-                        </ul>
-                        <div class="ti-tags">
-                            <span class="ti-tag">Platform Management</span><span class="ti-tag">SEO/SEM</span><span class="ti-tag">Data Analytics</span><span class="ti-tag">Security</span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="ti-top">
-                            <div>
-                                <div class="ti-role">IT People</div>
-                                <div class="ti-company">Pandawa Agri Indonesia</div>
-                            </div>
-                            <div class="ti-duration">Nov 2020 – Sep 2025 · 4 years 11 months</div>
-                        </div>
-                        <ul class="ti-body">
-                            <li>Memastikan infrastruktur IT berjalan lancar: network, server, dan operating system</li>
-                            <li>Internal application development & optimasi penggunaan IT antar departemen</li>
-                            <li>IT project management, website build, SEO & SEM optimization</li>
-                        </ul>
-                        <div class="ti-tags">
-                            <span class="ti-tag">Infrastructure</span><span class="ti-tag">Networking</span><span class="ti-tag">Web Dev</span><span class="ti-tag">IT Ops</span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="ti-top">
-                            <div>
-                                <div class="ti-role">Co-Founder</div>
-                                <div class="ti-company">Simetris Digital Agency</div>
-                            </div>
-                            <div class="ti-duration">Oct 2019 – Present · 6 years 5 months</div>
-                        </div>
-                        <ul class="ti-body">
-                            <li>Membangun & mempertahankan hubungan klien jangka panjang secara profesional</li>
-                            <li>Leadership tim, manajemen scope proyek, perencanaan & budgeting</li>
-                            <li>Manajemen Simetris Software House: strategi pengembangan & portofolio proyek</li>
-                            <li>Menangani 10+ klien/proyek secara simultan dengan prioritisasi efektif</li>
-                        </ul>
-                        <div class="ti-tags">
-                            <span class="ti-tag">Entrepreneurship</span><span class="ti-tag">Software House</span><span class="ti-tag">Client Management</span><span class="ti-tag">Digital Agency</span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="ti-top">
-                            <div>
-                                <div class="ti-role">SEO & SEM Consultant</div>
-                                <div class="ti-company">Anggichanger.co.id</div>
-                            </div>
-                            <div class="ti-duration">Feb 2025 – Apr 2025 · 3 months</div>
-                        </div>
-                        <ul class="ti-body">
-                            <li>Desain strategi SEO/SEM komprehensif, audit website, keyword research & competitor analysis</li>
-                            <li>Optimasi on-page, technical SEO, dan content strategy untuk peringkat organik</li>
-                            <li>Buat & kelola paid campaigns (Google Ads, Meta Ads), laporan performa & rekomendasi</li>
-                        </ul>
-                        <div class="ti-tags">
-                            <span class="ti-tag">SEO</span><span class="ti-tag">SEM</span><span class="ti-tag">Google Ads</span><span class="ti-tag">Meta Ads</span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="ti-top">
-                            <div>
-                                <div class="ti-role">Search Engine Marketing Consultant</div>
-                                <div class="ti-company">Amaspay.id</div>
-                            </div>
-                            <div class="ti-duration">Feb 2025 – Apr 2025 · 3 months</div>
-                        </div>
-                        <ul class="ti-body">
-                            <li>Strategi SEM tertarget, riset pasar & kompetitor, keyword research & segmentasi audiens</li>
-                            <li>Setup & management campaigns, budget & bidding, A/B testing untuk CTR & konversi</li>
-                            <li>Analisis data performa & pelaporan berkala</li>
-                        </ul>
-                        <div class="ti-tags">
-                            <span class="ti-tag">SEM</span><span class="ti-tag">A/B Testing</span><span class="ti-tag">Analytics</span><span class="ti-tag">Fintech</span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="ti-top">
-                            <div>
-                                <div class="ti-role">Web Developer (Internship)</div>
-                                <div class="ti-company">PT. PLN (Persero) UP3 Madiun</div>
-                            </div>
-                            <div class="ti-duration">Jan 2020 – Feb 2020 · 2 months</div>
-                        </div>
-                        <ul class="ti-body">
-                            <li>Pengembangan web application di divisi perencanaan</li>
-                        </ul>
-                        <div class="ti-tags">
-                            <span class="ti-tag">Web Development</span><span class="ti-tag">State-Owned Enterprise</span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+  </div>
+  <div class="hero-footer">
+    <div class="hero-contacts">
+      <div class="hc-item"><strong>Location</strong>Banyuwangi, East Java, ID</div>
+      <div class="hc-item"><strong>Email</strong><a href="mailto:caesararran@gmail.com">caesararran@gmail.com</a></div>
+      <div class="hc-item"><strong>LinkedIn</strong><a href="https://linkedin.com/in/arran-n-c-r" target="_blank">arran-n-c-r</a></div>
+      <div class="hc-item"><strong>Portfolio</strong><a href="https://arranncr.github.io" target="_blank">arranncr.github.io</a></div>
     </div>
+    <div class="scroll-hint">Scroll</div>
+  </div>
+</div>
 
-    <!-- SKILLS -->
-    <div class="panels-grid" id="sec-skills" style="display:none;">
-        <div class="panel visible">
-            <div class="panel-header">
-                <div class="panel-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-                <div class="panel-title">SKILLS.SYS</div>
-                <div class="panel-meta">core competencies</div>
-            </div>
-            <div class="panel-body">
-                <div class="skills-section">
-                    <div class="skills-heading">Technical Skills</div>
-                    <div class="skill-bars" id="skill-bars">
-                        <div class="skill-row"><span class="skill-name">Research & Development (R&D)</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="92"></div></div><span class="skill-pct">92%</span></div>
-                        <div class="skill-row"><span class="skill-name">Artificial Intelligence (AI)</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="88"></div></div><span class="skill-pct">88%</span></div>
-                        <div class="skill-row"><span class="skill-name">Automation</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="85"></div></div><span class="skill-pct">85%</span></div>
-                        <div class="skill-row"><span class="skill-name">Digital Transformation</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="90"></div></div><span class="skill-pct">90%</span></div>
-                        <div class="skill-row"><span class="skill-name">Platform Management</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="90"></div></div><span class="skill-pct">90%</span></div>
-                        <div class="skill-row"><span class="skill-name">Project Management</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="88"></div></div><span class="skill-pct">88%</span></div>
-                        <div class="skill-row"><span class="skill-name">SEO & SEM</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="88"></div></div><span class="skill-pct">88%</span></div>
-                        <div class="skill-row"><span class="skill-name">Cyber Security</span><div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="80"></div></div><span class="skill-pct">80%</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel visible">
-            <div class="panel-header">
-                <div class="panel-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-                <div class="panel-title">CERTS.DB</div>
-                <div class="panel-meta">certifications</div>
-            </div>
-            <div class="panel-body">
-                <div class="skills-heading">Certifications</div>
-                <div class="cert-grid">
-                    <div class="cert-item">🔐 ISO/IEC 27001 Information Security Associate™</div>
-                    <div class="cert-item">🛡️ Cybersecurity Fundamentals</div>
-                    <div class="cert-item">💻 Computer Software Programming</div>
-                    <div class="cert-item">📊 Fundamentals of Digital Marketing</div>
-                </div>
-                <div class="skills-heading" style="margin-top:1.5rem;">Soft Skills</div>
-                <div class="cert-grid">
-                    <div class="cert-item">🤝 Client Relationship Management</div>
-                    <div class="cert-item">🎯 Strategic Planning</div>
-                    <div class="cert-item">👥 Cross-Team Collaboration</div>
-                    <div class="cert-item">📈 Performance Optimization</div>
-                </div>
-            </div>
-        </div>
+<!-- ═══ RESEARCH ═══ -->
+<section class="section" id="research">
+<div class="sec-wrap">
+  <div class="sec-header fade-up"><span class="sec-num">01 /</span><h2 class="sec-title">Research Focus</h2><span class="sec-sub">Areas of Interest</span></div>
+  <div class="r-grid fade-up">
+    <div class="r-card">
+      <div class="r-num">RES-01</div><span class="r-icon">🤖</span>
+      <div class="r-title">AI Implementation &amp; Prototyping</div>
+      <div class="r-body">
+        Eksplorasi dan implementasi Artificial Intelligence untuk meningkatkan performa bisnis di Pandawa Agri Indonesia. Fokus pada:
+        <ul class="r-list">
+          <li>AI prototyping untuk identifikasi solusi digital yang tepat dan berkelanjutan</li>
+          <li>Otomasi proses berbasis machine learning untuk efisiensi operasional</li>
+          <li>Pengambilan keputusan strategis berbasis data (data-driven insights)</li>
+          <li>Evaluasi tools AI terkini melalui proof-of-concept yang terstruktur</li>
+        </ul>
+      </div>
+      <span class="r-tag">APPLIED·AI</span>
     </div>
-
-    <!-- AI & IoT RESEARCH -->
-    <div class="panels-grid" id="sec-research" style="display:none;">
-        <div class="panel panel-full visible">
-            <div class="panel-header">
-                <div class="panel-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-                <div class="panel-title">RESEARCH.AI</div>
-                <div class="panel-meta">ai · iot · focus areas</div>
-            </div>
-            <div class="panel-body">
-                <div class="research-grid">
-                    <div class="research-card card-ai">
-                        <div class="rc-icon">🤖</div>
-                        <div class="rc-title">AI Implementation & Prototyping</div>
-                        <div class="rc-desc">Eksplorasi dan implementasi AI untuk meningkatkan performa bisnis di Pandawa Agri Indonesia. Mencakup AI prototyping, otomasi proses berbasis machine learning, dan pengambilan keputusan strategis berbasis data untuk mendukung transformasi digital perusahaan.</div>
-                    </div>
-                    <div class="research-card card-iot">
-                        <div class="rc-icon">🌐</div>
-                        <div class="rc-title">Digital Transformation Strategy</div>
-                        <div class="rc-desc">Mengembangkan strategi & roadmap digital yang menyelaraskan adopsi teknologi dengan prioritas organisasi. Meliputi evaluasi tools terkini, proof-of-concept, serta desain solusi skalabel yang berdampak langsung pada efisiensi operasional dan pertumbuhan bisnis.</div>
-                    </div>
-                    <div class="research-card card-sec">
-                        <div class="rc-icon">🔐</div>
-                        <div class="rc-title">Information Security Research</div>
-                        <div class="rc-desc">Penerapan kerangka ISO/IEC 27001 pada sistem platform digital. Riset ancaman siber, kepatuhan kebijakan keamanan data, dan pengembangan protokol perlindungan enterprise dalam lingkungan cloud dan hybrid — didukung sertifikasi Cybersecurity Fundamentals.</div>
-                    </div>
-                    <div class="research-card card-data">
-                        <div class="rc-icon">📊</div>
-                        <div class="rc-title">Data-Driven Digital Research</div>
-                        <div class="rc-desc">Riset berbasis data untuk mendukung inisiatif digital: analitik platform, optimasi SEO algoritmik, natural language processing untuk keyword strategy, serta dampak AI (Google SGE) terhadap strategi pemasaran digital masa depan di industri agritech.</div>
-                    </div>
-                </div>
-
-                <div style="margin-top:1.5rem; padding: 1rem; border: 1px solid var(--border); border-left: 3px solid var(--cyan); border-radius: 3px; font-size:0.75rem; line-height:1.8; color: var(--text-dim);">
-                    <span style="color:var(--cyan); font-weight:bold;">// RESEARCH MISSION</span><br>
-                    Sebagai <span style="color:#fff">Digital Solution Researcher</span>, saya menjembatani kesenjangan antara kebutuhan bisnis dan teknologi — menghadirkan solusi yang <span style="color:#fff">inovatif, terukur, dan berkelanjutan</span> untuk operasi internal maupun mitra agrikultur. Terbuka untuk kolaborasi riset terapan di bidang AI, digital transformation, dan keamanan informasi.
-                </div>
-            </div>
-        </div>
+    <div class="r-card">
+      <div class="r-num">RES-02</div><span class="r-icon">🌐</span>
+      <div class="r-title">Digital Transformation Strategy</div>
+      <div class="r-body">
+        Pengembangan strategi &amp; roadmap digital yang menyelaraskan adopsi teknologi dengan prioritas organisasi. Mencakup:
+        <ul class="r-list">
+          <li>Technology research untuk identifikasi tren yang relevan dengan industri agrikultur</li>
+          <li>Perancangan digital roadmap dan initiative planning yang terukur</li>
+          <li>Cross-functional collaboration untuk memastikan adopsi dan eksekusi berhasil</li>
+          <li>Pengukuran dampak bisnis melalui metrics berbasis efisiensi dan skalabilitas</li>
+        </ul>
+      </div>
+      <span class="r-tag">STRATEGY</span>
     </div>
-
-    <!-- PROJECTS -->
-    <div class="panels-grid" id="sec-projects" style="display:none;">
-        <div class="panel panel-full visible">
-            <div class="panel-header">
-                <div class="panel-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-                <div class="panel-title">PROJECTS.LIST</div>
-                <div class="panel-meta">portfolio of work</div>
-            </div>
-            <div class="panel-body">
-                <div class="project-card">
-                    <div class="pc-title">Simetris Software House & Digital Agency</div>
-                    <div class="pc-duration">⏱ Oct 2019 – Present · 6+ years</div>
-                    <div class="pc-desc">Platform agensi digital yang mengelola multiple proyek web development dan digital marketing secara simultan. Membangun solusi software custom dan strategi digital end-to-end untuk 10+ klien dari berbagai industri.</div>
-                    <div class="pc-tags">
-                        <span class="pc-tag">Web Dev</span><span class="pc-tag">Digital Marketing</span><span class="pc-tag">Software House</span><span class="pc-tag">Client Management</span>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="pc-title">Digital Solution Research — Pandawa Agri Indonesia</div>
-                    <div class="pc-duration">⏱ Sep 2025 – Present · 6 months</div>
-                    <div class="pc-desc">Riset dan implementasi solusi digital inovatif untuk meningkatkan performa operasional dan dampak bisnis. Mencakup eksplorasi teknologi AI, prototyping, analitik berbasis data, dan pengembangan roadmap transformasi digital perusahaan agrikultur.</div>
-                    <div class="pc-tags">
-                        <span class="pc-tag">AI Research</span><span class="pc-tag">Digital Transformation</span><span class="pc-tag">R&D</span><span class="pc-tag">AgriTech</span><span class="pc-tag">Automation</span>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="pc-title">Enterprise Platform Management — Pandawa Agri</div>
-                    <div class="pc-duration">⏱ Mar 2023 – Sep 2025 · 2 years 7 months</div>
-                    <div class="pc-desc">Manajemen dan optimasi sistem platform enterprise untuk perusahaan agrikultur. Implementasi performance improvements, monitoring berkelanjutan, dan maintenance kepatuhan keamanan ISO/IEC 27001.</div>
-                    <div class="pc-tags">
-                        <span class="pc-tag">Enterprise Platform</span><span class="pc-tag">Security</span><span class="pc-tag">Data Analytics</span><span class="pc-tag">AgriTech</span>
-                    </div>
-                </div>
-                <div class="project-card" style="--green:#FFD700;">
-                    <div class="pc-title">Multi-Client SEO & SEM Campaign Management</div>
-                    <div class="pc-duration">⏱ Feb 2025 – Apr 2025 · 3 months</div>
-                    <div class="pc-desc">Pengembangan dan implementasi strategi SEO/SEM komprehensif untuk Anggichanger.co.id dan Amaspay.id. Meningkatkan visibilitas online, driving targeted traffic, dan optimasi paid campaigns secara data-driven.</div>
-                    <div class="pc-tags">
-                        <span class="pc-tag">SEO</span><span class="pc-tag">Google Ads</span><span class="pc-tag">Analytics</span><span class="pc-tag">Fintech</span><span class="pc-tag">E-Commerce</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="r-card">
+      <div class="r-num">RES-03</div><span class="r-icon">🔐</span>
+      <div class="r-title">Information Security Research</div>
+      <div class="r-body">
+        Riset dan implementasi kerangka keamanan informasi berbasis ISO/IEC 27001 pada sistem platform digital. Meliputi:
+        <ul class="r-list">
+          <li>Penerapan standar ISO/IEC 27001 pada enterprise platform — didukung sertifikasi resmi</li>
+          <li>Riset ancaman siber dan pengembangan protokol perlindungan sistem</li>
+          <li>Kepatuhan (compliance) kebijakan keamanan data di lingkungan cloud dan hybrid</li>
+          <li>Implementasi data security measures untuk melindungi informasi sensitif perusahaan</li>
+        </ul>
+      </div>
+      <span class="r-tag">SECURITY</span>
     </div>
-
-    <!-- EDUCATION -->
-    <div class="panels-grid" id="sec-education" style="display:none;">
-        <div class="panel panel-full visible">
-            <div class="panel-header">
-                <div class="panel-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-                <div class="panel-title">EDUCATION.DB</div>
-                <div class="panel-meta">academic background</div>
-            </div>
-            <div class="panel-body">
-                <div class="edu-card">
-                    <div class="edu-icon">🎓</div>
-                    <div>
-                        <div class="edu-degree">Diploma — Manajemen Informatika (Management Information Systems)</div>
-                        <div class="edu-school">Politeknik Negeri Malang</div>
-                        <div class="edu-year">2017 – 2020</div>
-                        <div style="margin-top:0.8rem; font-size:0.72rem; color:var(--text-dim); line-height:1.7;">
-                            Fokus studi mencakup sistem informasi manajemen, rekayasa perangkat lunak, database management, dan jaringan komputer. Fondasi akademis yang mendukung karier di bidang IT, platform digital, dan pengembangan sistem enterprise.
-                        </div>
-                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.75rem;">
-                            <span class="ti-tag">Information Systems</span>
-                            <span class="ti-tag">Software Engineering</span>
-                            <span class="ti-tag">Database Management</span>
-                            <span class="ti-tag">Computer Networks</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="r-card">
+      <div class="r-num">RES-04</div><span class="r-icon">📊</span>
+      <div class="r-title">Data-Driven Digital Research</div>
+      <div class="r-body">
+        Riset berbasis data untuk mendukung inisiatif digital dan marketing. Area fokus:
+        <ul class="r-list">
+          <li>Platform analytics dan interpretasi data performa untuk rekomendasi strategis</li>
+          <li>Riset algoritmik SEO berbasis machine learning dan NLP untuk keyword strategy</li>
+          <li>Analisis dampak AI (Google SGE) terhadap strategi pemasaran digital masa depan</li>
+          <li>Competitive research dan market intelligence untuk mendukung decision-making</li>
+        </ul>
+      </div>
+      <span class="r-tag">DATA</span>
     </div>
+  </div>
+  <div class="r-note fade-up">
+    <p>Sebagai Digital Solution Researcher, saya menjembatani kesenjangan antara kebutuhan bisnis dan teknologi — menghadirkan solusi yang inovatif, terukur, dan berkelanjutan untuk operasi internal maupun mitra agrikultur. Terbuka untuk kolaborasi riset terapan di bidang AI, digital transformation, dan keamanan informasi.</p>
+    <cite>— Arran Nabilah C.R · Digital Solution Researcher · Pandawa Agri Indonesia</cite>
+  </div>
+</div>
+</section>
 
-    <!-- CONTACT -->
-    <div class="panels-grid" id="sec-contact" style="display:none;">
-        <div class="panel panel-full visible">
-            <div class="panel-header">
-                <div class="panel-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-                <div class="panel-title">CONTACT.CFG</div>
-                <div class="panel-meta">get in touch</div>
-            </div>
-            <div class="panel-body">
-                <div class="contact-grid">
-                    <div class="contact-card">
-                        <div class="contact-icon">📍</div>
-                        <div>
-                            <div class="contact-label">LOCATION</div>
-                            <div class="contact-value">Banyuwangi, East Java, Indonesia</div>
-                        </div>
-                    </div>
-                    <div class="contact-card">
-                        <div class="contact-icon">✉️</div>
-                        <div>
-                            <div class="contact-label">EMAIL</div>
-                            <div class="contact-value"><a href="mailto:caesararran@gmail.com">caesararran@gmail.com</a></div>
-                        </div>
-                    </div>
-                    <div class="contact-card">
-                        <div class="contact-icon">🔗</div>
-                        <div>
-                            <div class="contact-label">LINKEDIN</div>
-                            <div class="contact-value"><a href="https://www.linkedin.com/in/arran-n-c-r" target="_blank">linkedin.com/in/arran-n-c-r</a></div>
-                        </div>
-                    </div>
-                    <div class="contact-card">
-                        <div class="contact-icon">🌐</div>
-                        <div>
-                            <div class="contact-label">PORTFOLIO / WEBSITE</div>
-                            <div class="contact-value"><a href="https://arranncr.github.io" target="_blank">arranncr.github.io</a></div>
-                        </div>
-                    </div>
-                </div>
+<!-- ═══ EXPERIENCE ═══ -->
+<section class="section" id="experience">
+<div class="sec-wrap">
+  <div class="sec-header fade-up"><span class="sec-num">02 /</span><h2 class="sec-title">Experience</h2><span class="sec-sub">Career Timeline</span></div>
 
-                <div style="margin-top:1.5rem; text-align:center; padding:1.5rem; border: 1px dashed var(--border); border-radius:4px;">
-                    <div style="font-size:0.7rem; color:var(--text-dim); letter-spacing:2px; margin-bottom:0.5rem;">OPEN FOR COLLABORATION</div>
-                    <div style="font-size:0.85rem; color:var(--cyan);">AI Research · Digital Transformation · R&D Collaboration · Platform Consulting</div>
-                </div>
-            </div>
-        </div>
+  <div class="exp-group-label fade-up">Pandawa Agri Indonesia · 2020 – Present</div>
+
+  <!-- 1. Digital Solution Researcher -->
+  <div class="exp-item fade-up">
+    <div>
+      <div class="exp-period">SEP 2025<br>PRESENT</div>
+      <div class="exp-company">Pandawa Agri Indonesia</div>
+      <div class="company-status current">● Current Role</div>
+      <div class="exp-duration">6 bulan</div>
     </div>
+    <div>
+      <div class="exp-role">Digital Solution Researcher</div>
+      <p class="exp-summary">Mendorong inovasi digital dan implementasi AI untuk meningkatkan performa bisnis dan efisiensi operasional. Mengintegrasikan eksplorasi teknologi, AI prototyping, dan data-driven insights untuk mendukung transformasi digital perusahaan.</p>
+      <div class="exp-responsibilities">
+        <div class="resp-title">Key Responsibilities &amp; Contributions:</div>
+        <ol class="resp-list">
+          <li>Melakukan riset tren teknologi digital, implementasi AI, dan optimasi enterprise platform.</li>
+          <li>Menerjemahkan kebutuhan bisnis dan user menjadi inisiatif digital yang meningkatkan efisiensi dan skalabilitas.</li>
+          <li>Mengembangkan strategi &amp; roadmap digital untuk menyelaraskan adopsi teknologi dengan prioritas organisasi.</li>
+          <li>Berkolaborasi dengan cross-functional teams dan stakeholders untuk memastikan eksekusi proyek yang sukses.</li>
+          <li>Memimpin evaluasi dan proof-of-concept tools terkini untuk mengidentifikasi solusi yang paling efektif dan berkelanjutan.</li>
+          <li>Mendukung inisiatif marketing melalui optimasi SEO &amp; SEM serta data analytics untuk meningkatkan digital presence.</li>
+        </ol>
+      </div>
+      <div class="exp-impact">
+        <span class="impact-label">Impact:</span> Menjembatani kesenjangan antara kebutuhan bisnis dan teknologi, menghadirkan solusi yang inovatif, terukur, dan berkelanjutan untuk operasi internal maupun mitra agrikultur.
+      </div>
+      <div class="pills"><span class="pill">AI Research</span><span class="pill">R&D</span><span class="pill">Digital Transformation</span><span class="pill">Automation</span><span class="pill">Proof-of-Concept</span><span class="pill">Data Analytics</span></div>
+    </div>
+  </div>
 
-</div><!-- /container -->
-</div><!-- /shell -->
+  <!-- 2. Project Manager -->
+  <div class="exp-item fade-up">
+    <div>
+      <div class="exp-period">SEP 2024<br>SEP 2025</div>
+      <div class="exp-company">Pandawa Agri Indonesia</div>
+      <div class="exp-duration">1 tahun 1 bulan</div>
+    </div>
+    <div>
+      <div class="exp-role">Project Manager</div>
+      <p class="exp-summary">Bertanggung jawab mengawasi dan mendorong keberhasilan proyek dari inisiasi hingga penyelesaian — memastikan proyek selesai tepat waktu, sesuai anggaran, dan selaras dengan tujuan perusahaan.</p>
+      <div class="exp-responsibilities">
+        <div class="resp-title">Key Responsibilities:</div>
+        <ol class="resp-list">
+          <li><strong>Project Planning:</strong> Membuat dan mengimplementasikan comprehensive project plans, menetapkan objectives, timelines, dan alokasi budget yang jelas untuk setiap fase.</li>
+          <li><strong>Team Leadership:</strong> Mengkoordinasikan cross-functional teams, mendistribusikan tugas berdasarkan kekuatan masing-masing, mendorong lingkungan kolaboratif yang produktif dan akuntabel.</li>
+          <li><strong>Budget &amp; Timeline Management:</strong> Memonitor ketat budget dan timeline, melakukan penyesuaian proaktif untuk mengatasi potensi delay atau cost overrun.</li>
+          <li><strong>Performance Tracking &amp; Reporting:</strong> Melacak progress secara berkala dan menyampaikan detailed updates kepada stakeholders untuk memastikan transparansi.</li>
+          <li><strong>Risk Mitigation:</strong> Mengidentifikasi potensi risiko secara proaktif, mengimplementasikan strategi mitigasi, dan menangani tantangan dengan cepat agar proyek tetap on-track.</li>
+          <li><strong>Project Review &amp; Closure:</strong> Melakukan evaluasi pasca-proyek untuk mengukur outcome, mengambil key insights, dan menyempurnakan proses untuk continuous improvement.</li>
+        </ol>
+      </div>
+      <div class="pills"><span class="pill">Project Management</span><span class="pill">Team Leadership</span><span class="pill">Risk Management</span><span class="pill">Budget Control</span><span class="pill">Agile</span></div>
+    </div>
+  </div>
+
+  <!-- 3. Digital Platform Specialist -->
+  <div class="exp-item fade-up">
+    <div>
+      <div class="exp-period">MAR 2023<br>SEP 2025</div>
+      <div class="exp-company">Pandawa Agri Indonesia</div>
+      <div class="exp-duration">2 tahun 7 bulan</div>
+    </div>
+    <div>
+      <div class="exp-role">Digital Platform Specialist</div>
+      <div class="exp-responsibilities">
+        <div class="resp-title">Key Responsibilities:</div>
+        <ol class="resp-list">
+          <li><strong>Manage Company Platform System:</strong> Bertanggung jawab atas manajemen dan maintenance platform systems perusahaan untuk memastikan kelancaran operasional; mengidentifikasi kebutuhan pengembangan atau peningkatan.</li>
+          <li><strong>Maintaining Relationships:</strong> Membangun dan menjaga hubungan baik dengan pengguna internal (karyawan) maupun eksternal (pelanggan, mitra bisnis); mengelola komunikasi dan memberikan support kepada platform users.</li>
+          <li><strong>Project Manager for Development:</strong> Memimpin dan mengelola platform development projects dari inisiasi hingga completion; mengkoordinasikan project teams, menetapkan target, dan memastikan proyek berjalan on-schedule dan on-budget.</li>
+          <li><strong>Develop Performance Strategies:</strong> Merancang dan mengimplementasikan strategi untuk meningkatkan performa dan efisiensi platform; melakukan business &amp; technology needs analysis untuk mengusulkan solusi relevan.</li>
+          <li><strong>Monitor Performance &amp; Issues:</strong> Memonitor performa platform secara berkala untuk memastikan optimal performance; mengidentifikasi dan menyelesaikan issues atau gangguan secara cepat dan efektif.</li>
+          <li><strong>Manage Data &amp; Analytics:</strong> Mengumpulkan, menganalisis, dan menginterpretasikan data terkait performa platform; menggunakan data dan analytics untuk membuat laporan dan memberikan rekomendasi perbaikan.</li>
+          <li><strong>Training &amp; Support:</strong> Memberikan training kepada pengguna platform; menyediakan technical dan non-technical support.</li>
+          <li><strong>Data Security Compliance:</strong> Memastikan semua aktivitas platform mematuhi kebijakan &amp; regulasi keamanan data yang berlaku; mengimplementasikan data security measures.</li>
+          <li><strong>SEO &amp; SEM Management:</strong> Mengembangkan dan mengimplementasikan strategi SEO dan SEM untuk meningkatkan online visibility perusahaan.</li>
+        </ol>
+      </div>
+      <div class="pills"><span class="pill">Platform Mgmt</span><span class="pill">SEO/SEM</span><span class="pill">Data Analytics</span><span class="pill">ISO 27001</span><span class="pill">Training</span><span class="pill">User Support</span></div>
+    </div>
+  </div>
+
+  <!-- 4. IT People -->
+  <div class="exp-item fade-up">
+    <div>
+      <div class="exp-period">NOV 2020<br>SEP 2025</div>
+      <div class="exp-company">Pandawa Agri Indonesia</div>
+      <div class="exp-duration">4 tahun 11 bulan</div>
+    </div>
+    <div>
+      <div class="exp-role">IT People</div>
+      <p class="exp-summary">Memastikan infrastruktur IT berjalan lancar, mengelola jaringan, server, dan sistem operasi. Tanggung jawab meliputi pengembangan aplikasi internal, optimasi penggunaan IT di setiap departemen, manajemen proyek IT, pengembangan website, serta optimasi SEO dan SEM. Dibutuhkan kemampuan komunikasi, analitis, kreativitas, dan problem-solving.</p>
+      <div class="pills"><span class="pill">IT Infrastructure</span><span class="pill">Network Management</span><span class="pill">Server Admin</span><span class="pill">App Development</span><span class="pill">Web Dev</span><span class="pill">SEO/SEM</span></div>
+    </div>
+  </div>
+
+  <!-- 5. Co-Founder Simetris -->
+  <div class="exp-group-label fade-up">Simetris Digital Agency · 2019 – Present</div>
+  <div class="exp-item fade-up">
+    <div>
+      <div class="exp-period">OCT 2019<br>PRESENT</div>
+      <div class="exp-company">Simetris Digital Agency</div>
+      <div class="company-status current">● Current Role</div>
+      <div class="exp-duration">6 tahun 5 bulan</div>
+    </div>
+    <div>
+      <div class="exp-role">Co-Founder</div>
+      <div class="exp-responsibilities">
+        <div class="resp-title">Key Responsibilities:</div>
+        <ol class="resp-list">
+          <li><strong>Client &amp; Customer Management:</strong> Memastikan hubungan kuat dengan klien terjaga; menangani kebutuhan, permintaan, dan keluhan klien secara profesional; memberikan updates berkala mengenai progress proyek; mengidentifikasi peluang untuk memperkuat business relationships.</li>
+          <li><strong>Team &amp; Project Scope Management:</strong> Mengorganisasi dan memimpin tim untuk mencapai tujuan proyek; mendefinisikan project scope secara jelas dan mendistribusikan tugas; memastikan komunikasi internal yang efektif; menyelesaikan isu dan tantangan selama eksekusi proyek.</li>
+          <li><strong>Planning &amp; Budgeting:</strong> Mengembangkan detailed project plans termasuk timelines, resources, dan deliverables; mengelola project budgets untuk cost efficiency; mengidentifikasi potensi risiko dan membuat mitigation plans; melaporkan status keuangan proyek kepada stakeholders.</li>
+          <li><strong>Simetris Software House Management:</strong> Merancang strategi pengembangan Simetris Software House; mengelola portofolio proyek; mengkoordinasikan pengembangan produk/layanan software berdasarkan kebutuhan pasar; memastikan kualitas deliverables.</li>
+          <li><strong>Multi-Project Handling:</strong> Mengawasi dan mengelola 10+ proyek secara simultan; memprioritaskan tugas dan mengalokasikan sumber daya secara efektif; memastikan pengiriman tepat waktu untuk semua proyek klien; beradaptasi dengan beragam kebutuhan klien.</li>
+        </ol>
+      </div>
+      <div class="pills"><span class="pill">Entrepreneurship</span><span class="pill">Software House</span><span class="pill">Client Management</span><span class="pill">Digital Agency</span><span class="pill">Multi-Project</span></div>
+    </div>
+  </div>
+
+  <!-- 6. SEO & SEM Consultant Anggichanger -->
+  <div class="exp-group-label fade-up">Consulting · 2025</div>
+  <div class="exp-item fade-up">
+    <div>
+      <div class="exp-period">FEB 2025<br>APR 2025</div>
+      <div class="exp-company">Anggichanger.co.id</div>
+      <div class="exp-duration">3 bulan</div>
+    </div>
+    <div>
+      <div class="exp-role">SEO &amp; SEM Consultant</div>
+      <div class="exp-responsibilities">
+        <div class="resp-title">Key Responsibilities:</div>
+        <ol class="resp-list">
+          <li><strong>Strategy Development:</strong> Merancang strategi SEO dan SEM komprehensif yang selaras dengan business goals; memberikan actionable marketing advice kepada brand owners.</li>
+          <li><strong>SEO Optimization:</strong> Melakukan website audits, keyword research, dan competitor analysis; mengoptimalkan on-page elements, technical SEO factors, dan content strategy untuk meningkatkan organic rankings.</li>
+          <li><strong>SEM Campaign Management:</strong> Membuat, mengelola, dan mengoptimalkan paid campaigns di Google Ads dan Meta Ads; menetapkan budgets, bid strategies, dan campaign schedules untuk memenuhi KPI.</li>
+          <li><strong>Performance Analysis:</strong> Memonitor dan menganalisis performa campaign menggunakan analytical tools (Google Analytics); menyiapkan detailed reports dengan insights dan rekomendasi untuk continuous improvement.</li>
+          <li><strong>Collaboration &amp; Consultation:</strong> Berkolaborasi dengan creative, content, dan technical teams; memberikan saran kepada stakeholders mengenai emerging trends dan innovative marketing approaches.</li>
+        </ol>
+      </div>
+      <div class="pills"><span class="pill">SEO</span><span class="pill">SEM</span><span class="pill">Google Ads</span><span class="pill">Meta Ads</span><span class="pill">Google Analytics</span><span class="pill">Keyword Research</span></div>
+    </div>
+  </div>
+
+  <!-- 7. SEM Consultant Amaspay -->
+  <div class="exp-item fade-up">
+    <div>
+      <div class="exp-period">FEB 2025<br>APR 2025</div>
+      <div class="exp-company">Amaspay.id</div>
+      <div class="exp-duration">3 bulan</div>
+    </div>
+    <div>
+      <div class="exp-role">Search Engine Marketing Consultant</div>
+      <div class="exp-responsibilities">
+        <div class="resp-title">Key Responsibilities:</div>
+        <ol class="resp-list">
+          <li><strong>Campaign Strategy:</strong> Mengembangkan targeted SEM strategies, melakukan riset pasar &amp; kompetitor, memberikan strategic marketing advice kepada brand owners.</li>
+          <li><strong>Keyword &amp; Audience:</strong> Melakukan keyword research dan mendefinisikan audience segments yang tepat sasaran.</li>
+          <li><strong>Campaign Management:</strong> Setup dan manage campaigns, mengawasi budgets dan bidding strategy.</li>
+          <li><strong>Optimization:</strong> Menjalankan A/B tests dan menyesuaikan strategi untuk meningkatkan CTR, conversions, dan ROI.</li>
+          <li><strong>Reporting &amp; Collaboration:</strong> Menganalisis performance data, menyiapkan laporan berkala, dan berkoordinasi dengan teams dan klien untuk menyempurnakan strategi marketing.</li>
+        </ol>
+      </div>
+      <div class="pills"><span class="pill">SEM</span><span class="pill">A/B Testing</span><span class="pill">Analytics</span><span class="pill">ROI Optimization</span><span class="pill">Fintech</span></div>
+    </div>
+  </div>
+
+  <!-- 8. PLN Intern -->
+  <div class="exp-group-label fade-up">Early Career · 2020</div>
+  <div class="exp-item fade-up">
+    <div>
+      <div class="exp-period">JAN 2020<br>FEB 2020</div>
+      <div class="exp-company">PT. PLN (Persero)</div>
+      <div class="exp-duration">2 bulan</div>
+    </div>
+    <div>
+      <div class="exp-role">Web Developer — Internship</div>
+      <p class="exp-summary">Magang di divisi perencanaan PT. PLN (Persero) UP3 Madiun. Bertanggung jawab dalam pengembangan web applications untuk mendukung kebutuhan operasional divisi perencanaan.</p>
+      <div class="pills"><span class="pill">Web Development</span><span class="pill">Planning Division</span><span class="pill">State-Owned Enterprise</span></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SKILLS ═══ -->
+<section class="section" id="skills">
+<div class="sec-wrap">
+  <div class="sec-header fade-up"><span class="sec-num">03 /</span><h2 class="sec-title">Skills</h2><span class="sec-sub">Competencies &amp; Certifications</span></div>
+
+  <div class="skills-tabs fade-up">
+    <div class="sk-tab active" data-tab="technical">Technical Skills</div>
+    <div class="sk-tab" data-tab="certs">Certifications</div>
+    <div class="sk-tab" data-tab="soft">Soft Skills</div>
+  </div>
+
+  <!-- TECHNICAL -->
+  <div class="sk-panel active" id="tab-technical">
+    <div>
+      <div class="skills-col-label fade-up">Core Research &amp; Digital</div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Research &amp; Development (R&D)</span><span class="sk-pct">92%</span></div><div class="sk-track"><div class="sk-fill" data-p="92"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Digital Transformation Strategy</span><span class="sk-pct">90%</span></div><div class="sk-track"><div class="sk-fill" data-p="90"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Artificial Intelligence (AI)</span><span class="sk-pct">88%</span></div><div class="sk-track"><div class="sk-fill" data-p="88"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Automation &amp; Process Optimization</span><span class="sk-pct">85%</span></div><div class="sk-track"><div class="sk-fill" data-p="85"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Data Analytics &amp; Insights</span><span class="sk-pct">87%</span></div><div class="sk-track"><div class="sk-fill" data-p="87"></div></div></div>
+    </div>
+    <div>
+      <div class="skills-col-label fade-up">Platform &amp; Marketing</div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Platform Management</span><span class="sk-pct">90%</span></div><div class="sk-track"><div class="sk-fill" data-p="90"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Project Management</span><span class="sk-pct">88%</span></div><div class="sk-track"><div class="sk-fill" data-p="88"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">SEO &amp; SEM</span><span class="sk-pct">88%</span></div><div class="sk-track"><div class="sk-fill" data-p="88"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Cyber Security (ISO 27001)</span><span class="sk-pct">80%</span></div><div class="sk-track"><div class="sk-fill" data-p="80"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">IT Infrastructure &amp; Networking</span><span class="sk-pct">83%</span></div><div class="sk-track"><div class="sk-fill" data-p="83"></div></div></div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATIONS -->
+  <div class="sk-panel" id="tab-certs" style="display:none">
+    <div style="grid-column:1/-1">
+      <div class="cert-list">
+        <div class="cert-row fade-up">
+          <div class="cert-ico">🛡</div>
+          <div>
+            <div class="cert-name">ISO/IEC 27001 Information Security Associate™</div>
+            <div class="cert-cat">INFORMATION SECURITY MANAGEMENT · INTERNATIONAL STANDARD</div>
+            <p style="font-size:0.75rem;color:#888;margin-top:0.3rem;line-height:1.6">Sertifikasi internasional yang memvalidasi pemahaman dan penerapan sistem manajemen keamanan informasi (ISMS) berdasarkan standar ISO/IEC 27001.</p>
+          </div>
+        </div>
+        <div class="cert-row fade-up">
+          <div class="cert-ico">🔒</div>
+          <div>
+            <div class="cert-name">Cybersecurity Fundamentals</div>
+            <div class="cert-cat">CYBERSECURITY · THREAT ANALYSIS · SECURITY PROTOCOLS</div>
+            <p style="font-size:0.75rem;color:#888;margin-top:0.3rem;line-height:1.6">Fondasi keamanan siber mencakup identifikasi ancaman, praktik perlindungan sistem, dan penerapan protokol keamanan digital.</p>
+          </div>
+        </div>
+        <div class="cert-row fade-up">
+          <div class="cert-ico">💻</div>
+          <div>
+            <div class="cert-name">Computer Software Programming</div>
+            <div class="cert-cat">SOFTWARE ENGINEERING · PROGRAMMING · DEVELOPMENT</div>
+            <p style="font-size:0.75rem;color:#888;margin-top:0.3rem;line-height:1.6">Kompetensi dalam pengembangan perangkat lunak, algoritma, dan praktik rekayasa perangkat lunak yang mendukung pengembangan platform digital.</p>
+          </div>
+        </div>
+        <div class="cert-row fade-up">
+          <div class="cert-ico">📈</div>
+          <div>
+            <div class="cert-name">Fundamentals of Digital Marketing</div>
+            <div class="cert-cat">DIGITAL MARKETING · GOOGLE · SEO · SEM · ANALYTICS</div>
+            <p style="font-size:0.75rem;color:#888;margin-top:0.3rem;line-height:1.6">Sertifikasi Google yang mencakup seluruh aspek digital marketing: SEO, SEM, content marketing, social media, analytics, dan strategi kampanye digital.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOFT SKILLS -->
+  <div class="sk-panel" id="tab-soft" style="display:none">
+    <div>
+      <div class="skills-col-label fade-up">Leadership &amp; Management</div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Strategic Planning</span><span class="sk-pct">90%</span></div><div class="sk-track"><div class="sk-fill" data-p="90"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Team Leadership &amp; Coordination</span><span class="sk-pct">88%</span></div><div class="sk-track"><div class="sk-fill" data-p="88"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Client Relationship Management</span><span class="sk-pct">90%</span></div><div class="sk-track"><div class="sk-fill" data-p="90"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Risk Identification &amp; Mitigation</span><span class="sk-pct">85%</span></div><div class="sk-track"><div class="sk-fill" data-p="85"></div></div></div>
+    </div>
+    <div>
+      <div class="skills-col-label fade-up">Research &amp; Communication</div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Analytical Thinking</span><span class="sk-pct">92%</span></div><div class="sk-track"><div class="sk-fill" data-p="92"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Problem Solving &amp; Creativity</span><span class="sk-pct">88%</span></div><div class="sk-track"><div class="sk-fill" data-p="88"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Cross-functional Collaboration</span><span class="sk-pct">90%</span></div><div class="sk-track"><div class="sk-fill" data-p="90"></div></div></div>
+      <div class="sk-item fade-up"><div class="sk-top"><span class="sk-name">Technical &amp; Business Communication</span><span class="sk-pct">87%</span></div><div class="sk-track"><div class="sk-fill" data-p="87"></div></div></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<section class="section" id="projects">
+<div class="sec-wrap">
+  <div class="sec-header fade-up"><span class="sec-num">04 /</span><h2 class="sec-title">Projects</h2><span class="sec-sub">Portfolio of Work</span></div>
+  <div class="proj-grid fade-up">
+    <div class="proj-card">
+      <div class="proj-num">PRJ-01</div>
+      <div class="proj-title">Digital Solution Research — Pandawa Agri Indonesia</div>
+      <div class="proj-dur">SEP 2025 – PRESENT · Banyuwangi, East Java</div>
+      <div class="proj-desc">Riset dan implementasi solusi digital inovatif yang meningkatkan performa operasional dan dampak bisnis di perusahaan agrikultur nasional. Eksplorasi teknologi AI, prototyping, dan pengembangan roadmap transformasi digital end-to-end. Berkolaborasi lintas fungsi untuk memastikan adopsi teknologi yang sukses dan berdampak nyata bagi mitra agrikultur.</div>
+      <div class="pills"><span class="pill">AI Prototyping</span><span class="pill">R&D</span><span class="pill">AgriTech</span><span class="pill">Automation</span><span class="pill">Roadmap</span></div>
+    </div>
+    <div class="proj-card">
+      <div class="proj-num">PRJ-02</div>
+      <div class="proj-title">Simetris Software House &amp; Digital Agency</div>
+      <div class="proj-dur">OCT 2019 – PRESENT · Banyuwangi, East Java</div>
+      <div class="proj-desc">Membangun dan memimpin Simetris Digital Agency dari nol selama 6+ tahun. Mengelola portofolio 10+ proyek web development dan digital marketing secara simultan. Menyediakan solusi software custom, strategi digital end-to-end, dan IT consulting untuk klien dari berbagai industri. Mengkoordinasikan tim, perencanaan proyek, budgeting, dan memastikan kualitas deliverables.</div>
+      <div class="pills"><span class="pill">Web Dev</span><span class="pill">Digital Marketing</span><span class="pill">Software House</span><span class="pill">IT Consulting</span><span class="pill">Team Lead</span></div>
+    </div>
+    <div class="proj-card">
+      <div class="proj-num">PRJ-03</div>
+      <div class="proj-title">Enterprise Platform Management — Pandawa Agri</div>
+      <div class="proj-dur">MAR 2023 – SEP 2025 · 2 tahun 7 bulan</div>
+      <div class="proj-desc">Manajemen dan optimasi menyeluruh sistem platform enterprise untuk perusahaan agrikultur. Memimpin platform development projects, mengimplementasikan performance improvements berkelanjutan, memastikan kepatuhan keamanan ISO/IEC 27001, dan mengembangkan strategi SEO &amp; SEM terintegrasi. Melibatkan training pengguna, analitik data, dan monitoring performa rutin.</div>
+      <div class="pills"><span class="pill">Enterprise Platform</span><span class="pill">ISO 27001</span><span class="pill">Data Analytics</span><span class="pill">SEO/SEM</span><span class="pill">Training</span></div>
+    </div>
+    <div class="proj-card">
+      <div class="proj-num">PRJ-04</div>
+      <div class="proj-title">Multi-Client SEO &amp; SEM Campaign Management</div>
+      <div class="proj-dur">FEB 2025 – APR 2025 · Anggichanger.co.id &amp; Amaspay.id</div>
+      <div class="proj-desc">Merancang dan mengimplementasikan strategi SEO/SEM komprehensif untuk dua klien secara bersamaan: platform e-commerce Anggichanger.co.id dan platform fintech Amaspay.id. Mencakup website audit, keyword research, competitor analysis, optimasi on-page &amp; technical SEO, pembuatan dan pengelolaan paid campaigns (Google Ads, Meta Ads), A/B testing, serta pelaporan performa berkala.</div>
+      <div class="pills"><span class="pill">SEO</span><span class="pill">Google Ads</span><span class="pill">Meta Ads</span><span class="pill">A/B Testing</span><span class="pill">Fintech</span><span class="pill">E-Commerce</span></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ EDUCATION ═══ -->
+<section class="section" id="education">
+<div class="sec-wrap">
+  <div class="sec-header fade-up"><span class="sec-num">05 /</span><h2 class="sec-title">Education</h2><span class="sec-sub">Academic Background</span></div>
+  <div class="edu-block fade-up">
+    <div class="edu-yr">2017 — 2020</div>
+    <div>
+      <div class="edu-deg">Diploma — Manajemen Informatika</div>
+      <div class="edu-sch">Politeknik Negeri Malang (Polinema)</div>
+      <p class="edu-desc" style="margin-bottom:0.75rem;">Program Diploma Management Information Systems memberikan fondasi akademis yang kuat di bidang sistem informasi manajemen, rekayasa perangkat lunak, database management, dan jaringan komputer.</p>
+      <p class="edu-desc">Pendidikan ini menjadi landasan utama karier di bidang IT, digital platform management, pengembangan sistem enterprise, dan riset teknologi digital yang saat ini dijalankan.</p>
+      <div class="pills" style="margin-top:0.9rem">
+        <span class="pill">Information Systems</span>
+        <span class="pill">Software Engineering</span>
+        <span class="pill">Database Management</span>
+        <span class="pill">Computer Networks</span>
+        <span class="pill">IT Management</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section class="section" id="contact">
+<div class="sec-wrap">
+  <div class="sec-header fade-up"><span class="sec-num">06 /</span><h2 class="sec-title">Contact</h2><span class="sec-sub">Get in Touch</span></div>
+  <div class="contact-layout">
+    <div class="fade-up">
+      <div class="contact-big">Let's<br><em>research</em><br>together.</div>
+      <p class="contact-sub">Tertarik berkolaborasi dalam penelitian AI, proyek transformasi digital, atau konsultasi platform? Mari terhubung dan wujudkan ide bersama.</p>
+      <a href="mailto:caesararran@gmail.com" class="contact-cta">Send a message →</a>
+    </div>
+    <div class="fade-up">
+      <div class="contact-row"><div class="c-ico">📍</div><div><div class="c-label">Location</div><div class="c-val">Banyuwangi, East Java, Indonesia</div></div></div>
+      <div class="contact-row"><div class="c-ico">✉️</div><div><div class="c-label">Email</div><div class="c-val"><a href="mailto:caesararran@gmail.com">caesararran@gmail.com</a></div></div></div>
+      <div class="contact-row"><div class="c-ico">🔗</div><div><div class="c-label">LinkedIn</div><div class="c-val"><a href="https://linkedin.com/in/arran-n-c-r" target="_blank">linkedin.com/in/arran-n-c-r</a></div></div></div>
+      <div class="contact-row"><div class="c-ico">🌐</div><div><div class="c-label">Portfolio</div><div class="c-val"><a href="https://arranncr.github.io" target="_blank">arranncr.github.io</a></div></div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+</div><!-- /main -->
+<!-- MOBILE NAV -->
+<nav class="mobile-nav" id="mobile-nav">
+  <div class="mn-item active" data-s="hero"><div class="mn-icon">⌂</div><div class="mn-label">Home</div></div>
+  <div class="mn-item" data-s="research"><div class="mn-icon">🔬</div><div class="mn-label">Research</div></div>
+  <div class="mn-item" data-s="experience"><div class="mn-icon">💼</div><div class="mn-label">Career</div></div>
+  <div class="mn-item" data-s="skills"><div class="mn-icon">⚡</div><div class="mn-label">Skills</div></div>
+  <div class="mn-item" data-s="projects"><div class="mn-icon">📁</div><div class="mn-label">Projects</div></div>
+  <div class="mn-item" data-s="education"><div class="mn-icon">🎓</div><div class="mn-label">Edu</div></div>
+  <div class="mn-item" data-s="contact"><div class="mn-icon">✉</div><div class="mn-label">Contact</div></div>
+</nav>
+
+</div><!-- /app -->
+
+<footer class="site-footer" style="display:none">
+  <span class="ft">ARRAN NABILAH C.R · DIGITAL SOLUTION RESEARCHER · 2026</span>
+  <span class="ft">BANYUWANGI · EAST JAVA · INDONESIA</span>
+</footer>
+
 
 <script>
-// ── Particles
-(function(){
-    const p = document.getElementById('particles');
-    for(let i=0;i<40;i++){
-        const el = document.createElement('div');
-        el.className = 'particle';
-        el.style.cssText = `
-            left:${Math.random()*100}%;
-            --dx:${(Math.random()-0.5)*200}px;
-            animation-duration:${8+Math.random()*15}s;
-            animation-delay:${Math.random()*15}s;
-            width:${1+Math.random()*2}px;
-            height:${1+Math.random()*2}px;
-            background:${Math.random()>0.5?'#00D4FF':'#7B2FFF'};
-        `;
-        p.appendChild(el);
-    }
-})();
+/* ── CURSOR ── */
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop);})();
 
-// ── Loading
-window.onload = function(){
-    const bar = document.getElementById('loading-bar');
-    const status = document.getElementById('loading-status');
-    const msgs = [
-        'Booting neural interface...',
-        'Loading AI modules...',
-        'Initializing IoT protocols...',
-        'Parsing research data...',
-        'Compiling portfolio...',
-        'Establishing secure connection...',
-        'Ready.'
-    ];
-    let val = 0, idx = 0;
-    const iv = setInterval(()=>{
-        val += Math.random()*18;
-        if(val>100) val=100;
-        bar.style.width = val+'%';
-        idx = Math.min(Math.floor(val/15), msgs.length-1);
-        status.textContent = msgs[idx];
-        if(val>=100){
-            clearInterval(iv);
-            setTimeout(()=>{
-                document.getElementById('loading-screen').style.display='none';
-                document.getElementById('shell').style.display='block';
-                animateSkillBars();
-            }, 500);
-        }
-    }, 300);
-};
+/* ── LOADER ── */
+let pct=0;
+const lbar=document.getElementById('lbar'),lcount=document.getElementById('lcount');
+const loadMsgs=['Initializing research environment...','Loading career data...','Parsing CV metadata...','Compiling portfolio...','Ready.'];
+let msgIdx=0;
+const lbl=document.querySelector('.loader-label');
+const loadIv=setInterval(()=>{
+  pct+=Math.floor(Math.random()*14)+3;
+  if(pct>=100){pct=100;clearInterval(loadIv);}
+  lbar.style.width=pct+'%';
+  lcount.textContent=String(pct).padStart(3,'0');
+  const newIdx=Math.min(Math.floor(pct/22),loadMsgs.length-1);
+  if(newIdx>msgIdx){msgIdx=newIdx;if(lbl)lbl.textContent=loadMsgs[msgIdx];}
+  if(pct>=100){
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      loader.style.transition='opacity 0.55s ease,transform 0.55s ease';
+      loader.style.opacity='0';loader.style.transform='translateY(-16px)';
+      setTimeout(()=>{
+        loader.style.display='none';
+        document.getElementById('app').style.display='block';
+        document.querySelector('.site-footer').style.display='flex';
+        triggerFade();
+      },550);
+    },350);
+  }
+},55);
 
-// ── Nav
-document.querySelectorAll('.nav-item').forEach(item=>{
-    item.addEventListener('click', function(){
-        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-        this.classList.add('active');
-        const sec = this.dataset.section;
-        const map = {
-            overview:'sec-overview', experience:'sec-experience',
-            skills:'sec-skills', research:'sec-research',
-            projects:'sec-projects', education:'sec-education', contact:'sec-contact'
-        };
-        Object.values(map).forEach(id=>{
-            const el = document.getElementById(id);
-            if(el) el.style.display = 'none';
-        });
-        const target = document.getElementById(map[sec]);
-        if(target){
-            target.style.display = '';
-            if(sec==='skills') animateSkillBars();
-        }
-        window.scrollTo({top:0, behavior:'smooth'});
-    });
+/* ── SECTION SWITCH ── */
+function switchSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.s-nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.mn-item').forEach(i=>i.classList.remove('active'));
+  const sec=document.getElementById(id);
+  if(sec)sec.classList.add('active');
+  document.querySelectorAll('[data-s="'+id+'"]').forEach(el=>el.classList.add('active'));
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(triggerFade,80);
+}
+
+/* ── DESKTOP NAV ── */
+document.querySelectorAll('.s-nav-item').forEach(item=>{
+  item.addEventListener('click',()=>switchSection(item.dataset.s));
 });
 
-// ── Skill bars
-function animateSkillBars(){
-    document.querySelectorAll('.skill-bar-fill').forEach(b=>{
-        const pct = b.dataset.pct;
-        setTimeout(()=>{ b.style.width = pct+'%'; }, 100);
+/* ── MOBILE NAV ── */
+document.querySelectorAll('.mn-item').forEach(item=>{
+  item.addEventListener('click',()=>switchSection(item.dataset.s));
+});
+
+/* ── SKILLS TABS ── */
+document.querySelectorAll('.sk-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.sk-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const id='tab-'+tab.dataset.tab;
+    document.querySelectorAll('.sk-panel').forEach(p=>{p.style.display='none';p.classList.remove('active');});
+    const panel=document.getElementById(id);
+    if(panel){panel.style.display='grid';panel.classList.add('active');}
+    setTimeout(triggerFade,40);
+  });
+});
+
+/* ── FADE UP + SKILL BARS ── */
+function triggerFade(){
+  document.querySelectorAll('.section.active .fade-up').forEach((el,i)=>{
+    el.classList.remove('vis');
+    setTimeout(()=>el.classList.add('vis'),i*60);
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('.section.active .sk-fill').forEach((b,i)=>{
+      b.style.width='0%';
+      setTimeout(()=>{b.style.width=b.dataset.p+'%';},i*70);
     });
+  },200);
 }
+
+setTimeout(triggerFade,750);
 </script>
 </body>
 </html>
